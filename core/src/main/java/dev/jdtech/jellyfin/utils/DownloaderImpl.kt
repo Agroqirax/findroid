@@ -222,7 +222,8 @@ class DownloaderImpl(
                 downloadStatus =
                     cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
                 when (downloadStatus) {
-                    DownloadManager.STATUS_RUNNING -> {
+                    DownloadManager.STATUS_RUNNING,
+                    DownloadManager.STATUS_PAUSED -> {
                         val totalBytes =
                             cursor.getLong(
                                 cursor.getColumnIndexOrThrow(

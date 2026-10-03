@@ -40,6 +40,12 @@ constructor(
     private val uiTextContinueWatching = UiText.StringResource(FilmR.string.continue_watching)
     private val uiTextNextUp = UiText.StringResource(FilmR.string.next_up)
 
+    init {
+        // Playback progress is only known once the player has reported it, which happens after
+        // the screen is visible again
+        viewModelScope.launch { repository.playbackStopped.collect { loadData() } }
+    }
+
     fun loadData() {
         Timber.i("Loading data")
         viewModelScope.launch(Dispatchers.Default) {

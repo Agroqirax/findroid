@@ -30,6 +30,18 @@ constructor(
 
     lateinit var episodeId: UUID
 
+    init {
+        // Playback progress is only known once the player has reported it, which happens after
+        // the screen is visible again
+        viewModelScope.launch {
+            repository.playbackStopped.collect {
+                if (::episodeId.isInitialized) {
+                    loadEpisode(episodeId)
+                }
+            }
+        }
+    }
+
     fun loadEpisode(episodeId: UUID) {
         this.episodeId = episodeId
         viewModelScope.launch {

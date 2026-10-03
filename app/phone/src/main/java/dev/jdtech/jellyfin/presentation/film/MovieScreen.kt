@@ -22,9 +22,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -140,6 +144,7 @@ private fun MovieScreenLayout(
     val paddingBottom = safePadding.bottom + MaterialTheme.spacings.default
 
     val scrollState = rememberScrollState()
+    var headerTitleHeight by remember { mutableIntStateOf(0) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         state.movie?.let { movie ->
@@ -152,6 +157,7 @@ private fun MovieScreenLayout(
                             modifier =
                                 Modifier.align(Alignment.BottomStart)
                                     .padding(start = paddingStart, end = paddingEnd)
+                                    .onSizeChanged { headerTitleHeight = it.height }
                         ) {
                             Text(
                                 text = movie.name,
@@ -278,6 +284,9 @@ private fun MovieScreenLayout(
             hasHomeButton = true,
             onBackClick = { onAction(MovieAction.OnBackClick) },
             onHomeClick = { onAction(MovieAction.OnHomeClick) },
+            title = state.movie?.name,
+            scrollOffset = { scrollState.value },
+            headerTitleHeight = { headerTitleHeight },
         )
     }
 }

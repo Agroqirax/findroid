@@ -28,6 +28,8 @@ import dev.jdtech.jellyfin.models.FindroidSeason
 import dev.jdtech.jellyfin.presentation.theme.spacings
 import dev.jdtech.jellyfin.presentation.utils.parallaxLayoutModifier
 
+val ItemHeaderHeight = 288.dp
+
 @Composable
 fun ItemHeader(
     item: FindroidItem,
@@ -126,7 +128,7 @@ private fun ItemHeaderBase(
             else -> item.images.logo
         }
 
-    Box(modifier = Modifier.height(288.dp).clipToBounds()) {
+    Box(modifier = Modifier.height(ItemHeaderHeight).clipToBounds()) {
         backdropImage()
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawRect(Color.Black.copy(alpha = 0.1f))

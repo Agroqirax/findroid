@@ -23,11 +23,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -96,6 +100,7 @@ private fun SeasonScreenLayout(state: SeasonState, onAction: (SeasonAction) -> U
     val paddingBottom = safePadding.bottom + MaterialTheme.spacings.default
 
     val lazyListState = rememberLazyListState()
+    var headerTitleHeight by remember { mutableIntStateOf(0) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         state.season?.let { season ->
@@ -123,7 +128,10 @@ private fun SeasonScreenLayout(state: SeasonState, onAction: (SeasonAction) -> U
                                         Modifier.width(120.dp).clip(MaterialTheme.shapes.small),
                                 )
                                 Spacer(Modifier.width(MaterialTheme.spacings.medium))
-                                Column(modifier = Modifier) {
+                                Column(
+                                    modifier =
+                                        Modifier.onSizeChanged { headerTitleHeight = it.height }
+                                ) {
                                     Text(
                                         text = season.seriesName,
                                         overflow = TextOverflow.Ellipsis,
@@ -182,6 +190,16 @@ private fun SeasonScreenLayout(state: SeasonState, onAction: (SeasonAction) -> U
             hasHomeButton = true,
             onBackClick = { onAction(SeasonAction.OnBackClick) },
             onHomeClick = { onAction(SeasonAction.OnHomeClick) },
+            title = state.season?.name,
+            scrollOffset = {
+                // The header is the first item of the list
+                if (lazyListState.firstVisibleItemIndex == 0) {
+                    lazyListState.firstVisibleItemScrollOffset
+                } else {
+                    Int.MAX_VALUE
+                }
+            },
+            headerTitleHeight = { headerTitleHeight },
         ) {
             Spacer(modifier = Modifier.width(4.dp))
             state.season?.let { season ->

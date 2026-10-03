@@ -23,10 +23,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -138,6 +142,7 @@ private fun EpisodeScreenLayout(
     val paddingBottom = safePadding.bottom + MaterialTheme.spacings.default
 
     val scrollState = rememberScrollState()
+    var headerTitleHeight by remember { mutableIntStateOf(0) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         state.episode?.let { episode ->
@@ -150,6 +155,7 @@ private fun EpisodeScreenLayout(
                             modifier =
                                 Modifier.align(Alignment.BottomStart)
                                     .padding(start = paddingStart, end = paddingEnd)
+                                    .onSizeChanged { headerTitleHeight = it.height }
                         ) {
                             val seasonName =
                                 episode.seasonName
@@ -275,6 +281,9 @@ private fun EpisodeScreenLayout(
             hasHomeButton = true,
             onBackClick = { onAction(EpisodeAction.OnBackClick) },
             onHomeClick = { onAction(EpisodeAction.OnHomeClick) },
+            title = state.episode?.name,
+            scrollOffset = { scrollState.value },
+            headerTitleHeight = { headerTitleHeight },
         ) {
             Spacer(modifier = Modifier.width(4.dp))
             state.episode?.let { episode ->

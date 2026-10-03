@@ -19,6 +19,18 @@ class SeasonViewModel @Inject constructor(private val repository: JellyfinReposi
 
     lateinit var seasonId: UUID
 
+    init {
+        // Playback progress is only known once the player has reported it, which happens after
+        // the screen is visible again
+        viewModelScope.launch {
+            repository.playbackStopped.collect {
+                if (::seasonId.isInitialized) {
+                    loadSeason(seasonId)
+                }
+            }
+        }
+    }
+
     fun loadSeason(seasonId: UUID) {
         this.seasonId = seasonId
         viewModelScope.launch {

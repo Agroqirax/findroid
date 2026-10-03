@@ -14,6 +14,7 @@ import dev.jdtech.jellyfin.models.SortBy
 import dev.jdtech.jellyfin.models.SortOrder
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import org.jellyfin.sdk.model.api.BaseItemDto
 import org.jellyfin.sdk.model.api.BaseItemKind
 import org.jellyfin.sdk.model.api.ItemFields
@@ -21,6 +22,9 @@ import org.jellyfin.sdk.model.api.PublicSystemInfo
 import org.jellyfin.sdk.model.api.UserConfiguration
 
 interface JellyfinRepository {
+    /** Emits the id of an item after its playback has stopped and its user data is updated */
+    val playbackStopped: SharedFlow<UUID>
+
     suspend fun getPublicSystemInfo(): PublicSystemInfo
 
     suspend fun getUserViews(): List<BaseItemDto>

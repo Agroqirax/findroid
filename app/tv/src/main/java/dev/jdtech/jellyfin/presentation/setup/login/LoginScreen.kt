@@ -31,6 +31,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -266,11 +268,16 @@ private fun LoginScreenLayout(
                     }
                 }
             }
-            if (state.disclaimer != null) {
-                Text(
-                    text = state.disclaimer!!,
-                    modifier = Modifier.padding(MaterialTheme.spacings.default),
-                )
+            state.disclaimer?.let { disclaimer ->
+                val text =
+                    remember(disclaimer) {
+                        // Drop link annotations, they can't be opened with a remote
+                        val html = AnnotatedString.fromHtml(disclaimer)
+                        AnnotatedString(html.text, html.spanStyles, html.paragraphStyles).let {
+                            it.subSequence(0, it.text.trimEnd().length)
+                        }
+                    }
+                Text(text = text, modifier = Modifier.padding(MaterialTheme.spacings.default))
             }
         }
     }

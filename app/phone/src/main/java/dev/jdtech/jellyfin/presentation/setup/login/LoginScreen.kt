@@ -32,16 +32,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -239,9 +245,22 @@ private fun LoginScreenLayout(
                     }
                 }
             }
-            if (state.disclaimer != null) {
+            state.disclaimer?.let { disclaimer ->
+                val linkStyles =
+                    TextLinkStyles(
+                        style =
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline,
+                            )
+                    )
+                val text =
+                    remember(disclaimer, linkStyles) {
+                        val html = AnnotatedString.fromHtml(disclaimer, linkStyles)
+                        html.subSequence(0, html.text.trimEnd().length)
+                    }
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = state.disclaimer!!)
+                Text(text = text)
             }
         }
         IconButton(
